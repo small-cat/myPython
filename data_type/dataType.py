@@ -29,7 +29,8 @@ print MDICT2
 
 # mix
 MTUPLE = ("abcd", 1, MDICT)
-MY_DICT = {'mdict':MTUPLE}
+SMALL_TUPLE = ('name', 'Python')
+MY_DICT = {'mdict':MTUPLE, SMALL_TUPLE:'tuple'}
 print MTUPLE
 print MY_DICT
 
