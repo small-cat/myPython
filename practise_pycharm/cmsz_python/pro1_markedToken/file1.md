@@ -31,7 +31,10 @@ __Sun for Day__
 
 **Moon for night**
 
-![image](file:///E:/ZHANSHOU/xfer.png)
+![image one](file:///E:/ZHANSHOU/xfer.png "I want to change the world" "this is a image")
 
 [hyper link](dsada)
 
+code`int a`
+
+	python code

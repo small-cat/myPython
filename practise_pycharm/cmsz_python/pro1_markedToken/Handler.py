@@ -130,6 +130,15 @@ class HTMLRenderer(Handler):
     def sub_bold(self, match):
         return '<strong>%s</strong>' % match.group(1)
 
+    def sub_url_md(self, match):
+        return '<a href="%s>%s</a>' % (match.group(5), match.group(2))      # [hyper link](https://test.com)
+
+    def sub_image_md(self, match):
+        return '<img src="%s" alt="%s" title="%s"/>' % (match.group(5), match.group(2), match.group(6))
+
+    def sub_code_md(self, match):
+        return '<code>%s</code>' % match.group(1)
+
 
 if __name__ == '__main__':
     handler = HTMLRenderer()
@@ -138,3 +147,9 @@ if __name__ == '__main__':
     print re.sub(r'(http[s]://[a-z0-9/\.\-]*)', handler.sub('url'), 'baidu(https://www.baidu.com you know?')
     print re.sub(r'(http[s]://[a-z0-9/\.\-]*)', handler.sub('url'), 'https://www.baidu.com')
     print re.sub(r'([a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', handler.sub('mail'), 'plz mail to mblrwuzy@gmail.com, thanks')
+    print re.sub(r'(\[)(.*)(\])(\()(.*)(\))', handler.sub('url_md'), '[hyper link](https://test.com)')
+    print re.sub(r'(!\[)(.*)(\])(\()([a-zA-Z0-9/_:\.\-]+)([ ]*.*)(\))', handler.sub('image_md'),
+                 '![image1](https://www.baidu.com/image00001.png "dsadsadsdas")')
+    print re.sub(r'(!\[)(.*)(\])(\()([a-zA-Z0-9/_:\.\-]+)([ ]*.*)(\))', handler.sub('image_md'),
+                 '![image1](https://www.baidu.com/image00001.png)')
+    print re.sub(r'`(.*?)`', handler.sub('code_md'), '`int a = 0``dsadsa`')

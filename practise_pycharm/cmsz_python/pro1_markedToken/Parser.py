@@ -36,7 +36,7 @@ class Parser:
                     last = rule.actions(block, self.handler)
                     if last:
                         break
-        self.handler.end('document')    #end func parse
+        self.handler.end('document')    # end func parse
         mfile.close()
 
 
@@ -53,12 +53,15 @@ class BasicTextParser(Parser):
         self.add_rule(ListItemRule())
         self.add_rule(ParagraphRule())
 
-        self.add_filter(r'\*([^*]+?)\*[^\*]', 'emphasis')
+        self.add_filter(r'\*([^*]+?)\*[^\*]', 'emphasis')           # _斜体* 这种情况无效
         self.add_filter(r'_([^_]+?)_[^_]', 'emphasis')
         self.add_filter(r'(http[s]://[a-zA-Z0-9/\.\-]+)', 'url')    # https://www.baidu.com
         self.add_filter(r'([a-zA-Z0-9\.\-]+@[a-zA-Z0-9\.\-]+)', 'mail')     # mblrwuzy@gmail.com
         self.add_filter(r'[\*]{2}(.+?)[\*]{2}', 'bold')             # ___BOLD*** 这种情况无效
         self.add_filter(r'[_]{2}(.+?)[_]{2}', 'bold')
+        self.add_filter(r'(\[)(.*)(\])(\()(.*)(\))', 'url_md')      # [hyper link](https://test.com)
+        self.add_filter(r'(!\[)(.*)(\])(\()([a-zA-Z0-9/_:\.\-]+)([ ]*.*)(\))', 'image_md')  # ![img1](img_link)
+        self.add_filter(r'`(.*?)`', 'code_md')
 
 
 handler = HTMLRenderer()

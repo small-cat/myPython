@@ -12,7 +12,8 @@ def lines(mfile):
 
 def blocks(mfile):
     """
-    return a generator, not a list
+    yiled return a generator, not a list
+    but we want a list
     """
     block = []
     for line in lines(mfile):
