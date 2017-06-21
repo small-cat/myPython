@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-from urllib import urlopen
 from reportlab.graphics.charts.lineplots import *
 from reportlab.graphics.charts.textlabels import *
 from reportlab.graphics import renderPDF
@@ -34,6 +33,11 @@ pred = [row[2] for row in data]
 high = [row[3] for row in data]
 low = [row[4] for row in data]
 times = [row[0] + row[1]/12.0 for row in data]
+
+print pred
+print high
+print low
+print times
 
 lp = LinePlot()
 lp.x = 50
