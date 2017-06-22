@@ -27,23 +27,28 @@ class CommandHandler:
 
     def handle(self, session, line):
         """
-        处理从给定的会话中接受到的行
+        处理从给定的会话中接受到的行, 除 login 和 logout 外，
+        其余均作为普通输入
         """
         if not line.strip():
             return
         parts = line.split(' ', 1) # into two parts
         cmd = parts[0]
         try:
-            line = parts[1].strip()
+            remain_line = parts[1].strip()  # line 剩余的部分
         except IndexError:
-            line = ''
-        # 查找处理程序
+            remain_line = ''
+        # 查找处理程序, 只有 login 和 logout 这两个命令
         method = getattr(self, 'do_'+cmd, None)
         try:
-            method(session, line)
+            method(session, remain_line)
         except TypeError, e:           # 正常运行，但是抛出了一个 TypeError
             # print e
-            self.unknown(session, cmd)
+            method = getattr(self, 'do_default', None)  # 如果在 ChatRoom 中，除 look 和 who 外都是普通输入
+            if hasattr(method, '__call__'):
+                method(session, line)
+            else:       # 若在 LoginRoom 中，除 login 和 logout 外，其余命令不识别
+                self.unknown(session, cmd)
 
 
 class Room(CommandHandler):
@@ -95,9 +100,7 @@ class LoginRoom(Room):
         session.push('Welcome to %s\r\n' % self.server.name)
 
     def unknown(self, session, cmd):
-        session.push('''
-        Please login in
-        Use "login <nick>"\r\n''')
+        session.push('Use "login <nickname>"\r\n')
 
     def do_login(self, session, line):
         name = line.strip()
@@ -105,11 +108,27 @@ class LoginRoom(Room):
         if not name:
             session.push('Please enter a name\r\n')
         elif name in self.server.users:
-            session.push('The name "%s" is taken\r\n', self.server.users)
+            session.push('The name "%s" is taken\r\n' % name) # push just one argument
             session.push('Please try again\r\n')
         else:
             session.name = name
             session.enter(self.server.main_room)
+
+    def do_info(self,session, line):
+        """
+        info command to show some information:
+        status: unlogin, please login first
+        """
+        session.push('status: unlogin, please login first.(Type "help" to get more information\r\n)')
+
+    def do_help(self, session, line):
+        """
+        show help info
+        """
+        session.push('login <nickname>     login with a nickname\r\n')
+        session.push('info                 show information\r\n')
+        session.push('help                 show help info\r\n')
+        session.push('logout               exit\r\n')
 
 
 class ChatRoom(Room):
@@ -128,7 +147,15 @@ class ChatRoom(Room):
         # 广播有用户离开
         self.broadcast(session.name + ' has left room\r\n')
 
+    """
     def do_say(self, session, line):
+        self.broadcast(session.name + ': ' + line + '\r\n')
+    """
+
+    def do_default(self, session, line):
+        """
+        停用 do_say，出了 login 和 logout 命令外，其他都作为普通发言
+        """
         self.broadcast(session.name + ': ' + line + '\r\n')
 
     def do_look(self, session, line):
@@ -146,6 +173,23 @@ class ChatRoom(Room):
         session.push('The following are logged in:\r\n')
         for name in self.server.users:
             session.push(name + '\r\n')
+
+    def do_info(self, session, line):
+        """
+        show some information
+        """
+        session.push('status: login in %s\r\n' % 'Chat Room')
+        session.push('nickname: %s\r\n' % session.name)
+
+    def do_help(self, session, line):
+        """
+        show help information
+        """
+        session.push('look      show all users in current chat room\r\n')
+        session.push('who       show all logined users\r\n')
+        session.push('info      show information\r\n')
+        session.push('help      show help information\r\n')
+        session.push('logout    exit')
 
 
 class LogoutRoom(Room):
