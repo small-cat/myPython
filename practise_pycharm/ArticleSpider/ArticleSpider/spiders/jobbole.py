@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 import scrapy
 
+__author__ = "Sholegance (mblrwuzy@gmail.com)"
+__date__ = ""
+__status__ = ""
+__version__ = ""
+
+__metaclass__ = type
+
 
 class JobboleSpider(scrapy.Spider):
     name = 'jobbole'
