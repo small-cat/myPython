@@ -17,15 +17,31 @@ class JobboleSpider(scrapy.Spider):
 
     def parse(self, response):
         title = response.xpath("//div[@class='entry-header']/h1/text()").extract()[0]
-        match_re = re.match("([0-9/]*).*", response.xpath('//p[@class="entry-meta-hide-on-mobile"]/text()').extract()[0].strip())
+        match_re = re.match("([0-9/]*).*",
+                            response.xpath('//p[@class="entry-meta-hide-on-mobile"]/text()').extract()[0].strip())
         if match_re:
-            datetime = match_re.group(1)
+            create_date = match_re.group(1)
         votes = int(response.xpath('//span[contains(@class, "vote-post-up")]/h10/text()').extract()[0])
-        match_fav = re.match('.*(\d+).*', response.xpath("//span[contains(@class, 'bookmark-btn')]/text()").extract()[0])
+        match_fav = re.match('.*?(\d+).*',
+                             response.xpath("//span[contains(@class, 'bookmark-btn')]/text()").extract()[0])
         if match_fav:
             fav_nums = int(match_fav.group(1))
+        else:
+            fav_nums = 0
 
-        print("title:%s, datetime:%s, votes:%d\n" % (title, datetime, votes))
-        print("fav_nums: ", fav_nums)
+        comments_nums_match = re.match(".*?(\d+).*",
+                                       response.xpath("//a[@href='#article-comment']/span/text()").extract_first())
+        if comments_nums_match:
+            comments_nums = int(comments_nums_match.group(1))
+        else:
+            comments_nums = 0
+
+        tag_lists = response.xpath("//p[@class='entry-meta-hide-on-mobile']/a/text()").extract()
+        tag_lists = [ele for ele in tag_lists if not ele.strip().endswith('评论')]
+        tags = ','.join(tag_lists)
+        print(tags)
+
+        cpyrights = response.xpath("//div[@class='copyright-area']/*/text()").extract()
+        content = response.xpath("//div[@id='cnblogs_post_body']/*/text()").extract()
 
         pass
