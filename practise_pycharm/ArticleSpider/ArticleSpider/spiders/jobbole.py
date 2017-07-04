@@ -3,6 +3,7 @@ import scrapy
 import re
 from scrapy import Request
 from urllib import parse
+from ArticleSpider.utils.common import gen_md5
 
 from ArticleSpider.items import JobBoleArticleItem
 
@@ -23,6 +24,12 @@ class JobboleSpider(scrapy.Spider):
         """
         1. 获取文章列表页中的文章url，交给 scrapy 下载后并进行解析，即调用 parse 函数解析
         2. 然后获取下一页的文章 url，按照1 2 循环
+
+        ---
+        对于 parse 函数，一般做三种事情
+        a. 解析返回的数据 response data
+        b. 提取数据，生成 ITEM
+        c. 生成需要进一步处理 URL 的 Request 对象
         """
         post_nodes = response.css("#archive .floated-thumb .post-thumb")    # a selector, 可以在这个基础上继续做 selector
         # 某些网站中，url 仅仅只是一个后缀，需要将当前页面的url+后缀进行拼接，使用的是 parse.urljoin(base, url)
@@ -35,9 +42,9 @@ class JobboleSpider(scrapy.Spider):
                           meta={"front-image-url":img_url}, callback=self.parse_detail)
 
         # 必须考虑到有前一页，当前页和下一页链接的影响，使用如下所示的方法
-        # next_url = response.css("span.page-numbers.current+a::attr(href)").extract_first("")
-        # if next_url:
-        #     yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
+        next_url = response.css("span.page-numbers.current+a::attr(href)").extract_first("")
+        if next_url:
+            yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_detail(self, response):
         """
@@ -118,6 +125,7 @@ class JobboleSpider(scrapy.Spider):
         article_item["tags"] = tags
         article_item["cpyrights"] = cpyrights
         article_item["content"] = content
+        article_item["object_id"] = gen_md5(response.url)
 
         # 将 item 传递到 scrapy, scrapy 会通过 http 将 item 传递到 pipeline, 数据操作，都可以集中在 pipeline 中进行处理
         yield article_item

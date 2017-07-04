@@ -16,6 +16,7 @@ class ArticlespiderItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+
 class JobBoleArticleItem(scrapy.Item):
     """
     定义自己的 Item 类
@@ -31,4 +32,5 @@ class JobBoleArticleItem(scrapy.Item):
     tags = scrapy.Field()           # 标签分类 label
     cpyrights = scrapy.Field()      # 版权，著作人相关信息
     content = scrapy.Field()        # 文章内容
+    object_id = scrapy.Field()      # 文章内容的md5的哈希值，能够将长度不定的 url 转换成定长的序列
 

@@ -9,12 +9,14 @@
 """
 from scrapy.pipelines.images import ImagesPipeline
 
+
 class ArticlespiderPipeline(object):
     def process_item(self, item, spider):
         return item
 
 
-class ArticleImagePipeline(ImagesPipeline):
+#class ArticleImagePipeline(ImagesPipeline):
+
     """
     仅对封面图片进行操作
     """
