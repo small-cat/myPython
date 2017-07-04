@@ -43,8 +43,8 @@ class JobboleSpider(scrapy.Spider):
 
         # 必须考虑到有前一页，当前页和下一页链接的影响，使用如下所示的方法
         next_url = response.css("span.page-numbers.current+a::attr(href)").extract_first("")
-        if next_url:
-            yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
+        # if next_url:
+        #     yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_detail(self, response):
         """
@@ -111,20 +111,24 @@ class JobboleSpider(scrapy.Spider):
         tag_lists_css = [ele for ele in tag_lists_css if not ele.strip().endswith('评论')]
         tags = ','.join(tag_lists_css)
 
-        cpyrights = response.css(".copyright-area").extract()
+        # cpyrights = response.css(".copyright-area").extract()
         content = response.css(".entry *::text").extract()
 
         # 复制 item 对象
         article_item["title"] = title
         article_item["create_date"] = create_date
         article_item["url"] = response.url
-        article_item["front_img_url"] = [front_img_url]
+        article_item["front_img_url_download"] = [front_img_url] # 这里传递的需要是列表的形式，否则后面保存图片的时候，
+                                                                 # 会出现类型错误，必须是可迭代对象
+        article_item["front_img_url"] = front_img_url  # 此处不能使用列表的形式，用于数据库入库时使用，否则，将出现如下错误
+                                                       # return "(%s)" % (','.join(escape_sequence(t, d)))
+                                                       # TypeError: sequence item 0: expected str instance, bytes found
         article_item["fav_nums"] = fav_nums
         article_item["comment_nums"] = comment_nums
         article_item["vote_nums"] = vote_nums
         article_item["tags"] = tags
-        article_item["cpyrights"] = cpyrights
-        article_item["content"] = content
+        # article_item["cpyrights"] = cpyrights
+        article_item["content"] = ''.join(content)      # 取出的 content 是一个 list ,存入数据库的时候，需要转换成字符串
         article_item["object_id"] = gen_md5(response.url)
 
         # 将 item 传递到 scrapy, scrapy 会通过 http 将 item 传递到 pipeline, 数据操作，都可以集中在 pipeline 中进行处理

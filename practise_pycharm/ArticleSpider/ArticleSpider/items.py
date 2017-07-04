@@ -24,13 +24,14 @@ class JobBoleArticleItem(scrapy.Item):
     title = scrapy.Field()          # Field()能够接收和传递任何类型的值,类似于字典的形式
     create_date = scrapy.Field()    # 创建时间
     url = scrapy.Field()            # 文章路径
-    front_img_url = scrapy.Field()  # 文章封面图片路径
+    front_img_url_download = scrapy.Field()  # 文章封面图片路径,用于下载，赋值时必须为数组形式
+    front_img_url = scrapy.Field()
     front_img_path = scrapy.Field() # 保存图片路径（本地路径）
     fav_nums = scrapy.Field()       # 收藏数
     comment_nums = scrapy.Field()   # 评论数
     vote_nums = scrapy.Field()      # 点赞数
     tags = scrapy.Field()           # 标签分类 label
-    cpyrights = scrapy.Field()      # 版权，著作人相关信息
+    # cpyrights = scrapy.Field()      # 版权，著作人相关信息
     content = scrapy.Field()        # 文章内容
     object_id = scrapy.Field()      # 文章内容的md5的哈希值，能够将长度不定的 url 转换成定长的序列
 

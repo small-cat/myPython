@@ -70,13 +70,17 @@ ROBOTSTXT_OBEY = False
 # 在下面配置了一个 ImagesPipeline 这个类，是 pipelines 提供的能够用于下载图片的类
 # 类后面接的数字，表示的是 ITEM 流经这个类的顺序，数字越小，该类就越早处理 ITEM 对象
 ITEM_PIPELINES = {
-   'ArticleSpider.pipelines.ArticlespiderPipeline': 300,
-   'scrapy.pipelines.images.ImagesPipeline': 1,
+  # 'ArticleSpider.pipelines.ArticlespiderPipeline': 300,
+  # 'scrapy.pipelines.images.ImagesPipeline': 1,
+  'ArticleSpider.pipelines.ArticleImagePipeline': 1,
+  # 'ArticleSpider.pipelines.JsonWithEncodingPipeline': 2,
+  # 'ArticleSpider.pipelines.JsonExporterPipeline':2,
+  'ArticleSpider.pipelines.MysqlPipeline': 2,
 }
 
 # 在 ITEM_PIPELINES 配置图片类之后，下载图片的话，还需要配置 ITEM 中哪一个字段是图片的URL，存放在什么地方
 # 图片下载操作，需要 module PIL, pip install pillow
-IMAGES_URLS_FIELD = "front_img_url"     # ITEM 中的图片 URL，用于下载
+IMAGES_URLS_FIELD = "front_img_url_download"     # ITEM 中的图片 URL，用于下载
 # 注意： 此处对 ITEM中的 front_img_url 这个参数的值，要求是数组形式，否则，
 # 就会出现错误 ValueError: Missing scheme in request url: h， 在 parse() 函数中赋值的时候，就以数组的形式进行赋值
 PROJECT_IMAGE_PATH = os.path.abspath(os.path.dirname(__file__))   # 获取当前文件所在目录
