@@ -75,7 +75,8 @@ ITEM_PIPELINES = {
   'ArticleSpider.pipelines.ArticleImagePipeline': 1,
   # 'ArticleSpider.pipelines.JsonWithEncodingPipeline': 2,
   # 'ArticleSpider.pipelines.JsonExporterPipeline':2,
-  'ArticleSpider.pipelines.MysqlPipeline': 2,
+  # 'ArticleSpider.pipelines.MysqlPipeline': 2,
+  'ArticleSpider.pipelines.MysqlTwistedPipeline': 2,
 }
 
 # 在 ITEM_PIPELINES 配置图片类之后，下载图片的话，还需要配置 ITEM 中哪一个字段是图片的URL，存放在什么地方
@@ -110,3 +111,9 @@ IMAGES_STORE = os.path.join(PROJECT_IMAGE_PATH, "images")         # 下载图片
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# MySQL params
+MYSQL_HOST = "192.168.0.101"
+MYSQL_DBNAME = "article_spider"
+MYSQL_USER = "spider"
+MYSQL_PASSWORD = "wuzhenyu"

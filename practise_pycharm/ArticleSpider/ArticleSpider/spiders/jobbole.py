@@ -4,15 +4,14 @@ import re
 from scrapy import Request
 from urllib import parse
 from ArticleSpider.utils.common import gen_md5
+from scrapy.loader import ItemLoader
 
-from ArticleSpider.items import JobBoleArticleItem
+from ArticleSpider.items import JobBoleArticleItem, ArticleItemLoader
 
 __author__ = "Sholegance (mblrwuzy@gmail.com)"
 __date__ = ""
 __status__ = ""
 __version__ = ""
-
-__metaclass__ = type
 
 
 class JobboleSpider(scrapy.Spider):
@@ -48,6 +47,11 @@ class JobboleSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         """
+        具体解析函数
+        """
+        # #######################################################################################################
+        # ########################################### Xpath Selector ##############################################
+        """
         title = response.xpath("//div[@class='entry-header']/h1/text()").extract()[0]
         match_re = re.match("([0-9/]*).*",
                             response.xpath('//p[@class="entry-meta-hide-on-mobile"]/text()').extract()[0].strip())
@@ -76,8 +80,10 @@ class JobboleSpider(scrapy.Spider):
         #content = response.xpath("//div[@class='entry']/*/text()").extract()
         """
 
-        ########################################
-        #implement with css selector
+        # #######################################################################################################
+        # ########################################### CSS Selector ##############################################
+        # implement with css selector
+        """
         article_item = JobBoleArticleItem() # 实例化 item 对象
 
         front_img_url = response.meta.get("front-image-url", "") # 封面图
@@ -130,6 +136,30 @@ class JobboleSpider(scrapy.Spider):
         # article_item["cpyrights"] = cpyrights
         article_item["content"] = ''.join(content)      # 取出的 content 是一个 list ,存入数据库的时候，需要转换成字符串
         article_item["object_id"] = gen_md5(response.url)
+        """
+
+        # #######################################################################################################
+        # ############################################ Item Loader ##############################################
+        # 通过 item_loader 加载 item，item_loader相当于一个容器
+        # css 或者 xpath 或者 value 参数都是可以做成可配置性的，比如存放在数据库中或者文件中，这样比上面的方法实现起来更加灵活
+        # 也更加简洁
+        item_loader = ArticleItemLoader(item=JobBoleArticleItem(), response=response)
+        item_loader.add_css("title", ".entry-header h1::text")  # 通过 css 选择器获取值
+        item_loader.add_value("url", response.url)
+        item_loader.add_css("create_date", ".entry-meta-hide-on-mobile::text")
+        item_loader.add_value("front_img_url_download", [front_img_url])
+        item_loader.add_value("front_img_url", front_img_url)
+        item_loader.add_css("fav_nums", ".bookmark-btn::text")
+        item_loader.add_css("comment_nums", "a[href='#article-comment'] span::text")
+        item_loader.add_css("vote_nums", ".vote-post-up h10::text")
+        item_loader.add_css("tags", ".entry-meta-hide-on-mobile a::text")
+        item_loader.add_css("content", ".entry *::text")
+        item_loader.add_value("object_id", gen_md5(response.url))
+        # item_loader.add_xpath()
+        # item_loader.add_value()
+        article_item_loader = item_loader.load_item()   # 这个方法，将根据上面的规则进行解析, 所有的值将都变成 list
+        # 但是，我们需要的数据，比如最上面，直接通过 css selector 的方法获取的值，是经过处理过后的，经过正则表达式匹配后的。
+        # 如何做到这个，可以在 Item 类中进行处理，在 Item 类的对象中，定义对象时在 Field() 中进行处理，查看 items.py 文件
 
         # 将 item 传递到 scrapy, scrapy 会通过 http 将 item 传递到 pipeline, 数据操作，都可以集中在 pipeline 中进行处理
         yield article_item
