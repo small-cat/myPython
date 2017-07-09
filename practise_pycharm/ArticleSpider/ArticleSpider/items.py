@@ -28,10 +28,12 @@ def get_nums(value):
 
 
 def get_date(value):
-    re_match = re.match("([0-9/]*).*", value)
+    re_match = re.match("([0-9/]*).*?", value.strip())
     if re_match:
         create_date = re_match.group(1)
-
+    else:
+        create_date = ""
+    return create_date
 
 def remove_comment_tag(value):
     """
@@ -94,7 +96,8 @@ class JobBoleArticleItem(scrapy.Item):
     """
     title = scrapy.Field()
     create_date = scrapy.Field(     # 创建时间
-        input_processor = MapCompose(get_date)
+        input_processor = MapCompose(get_date),
+        output_processor = Join("")
     )
     url = scrapy.Field()            # 文章路径
     front_img_url_download = scrapy.Field(    # 文章封面图片路径,用于下载，赋值时必须为数组形式
@@ -130,5 +133,5 @@ class ArticleItemLoader(ItemLoader):
     自定义 ItemLoader, 就相当于一个容器
     """
     # 这里表示，输出获取的 ArticleItemLoader 提取到的值，都是 list 中的第一个值
-    # 如果有的默认不是去第一个值，就在 Field() 中进行修改
+    # 如果有的默认不是取第一个值，就在 Field() 中进行修改
     default_output_processor = TakeFirst()

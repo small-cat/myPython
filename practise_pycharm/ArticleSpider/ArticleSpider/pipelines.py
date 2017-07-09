@@ -171,6 +171,7 @@ class MysqlTwistedPipeline(object):
         """
         执行具体的操作，能够自动 commit
         """
+        print(item["create_date"])
         insert_sql = """
                     insert into article(title, create_date, url, url_object_id, front_img_url, front_img_path, comment_nums, 
                     fav_nums, vote_nums, tags, content) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, '%s', '%s');
@@ -181,4 +182,5 @@ class MysqlTwistedPipeline(object):
         # self.cursor.execute(insert_sql, (item["title"], item["create_date"], item["url"], item["object_id"],
         #                                 item["front_img_url"], item["front_img_path"], item["comment_nums"],
         #                                 item["fav_nums"], item["vote_nums"], item["tags"], item["content"]))
+        print(insert_sql)
         cursor.execute(insert_sql)

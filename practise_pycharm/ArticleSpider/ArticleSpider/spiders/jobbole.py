@@ -143,7 +143,9 @@ class JobboleSpider(scrapy.Spider):
         # 通过 item_loader 加载 item，item_loader相当于一个容器
         # css 或者 xpath 或者 value 参数都是可以做成可配置性的，比如存放在数据库中或者文件中，这样比上面的方法实现起来更加灵活
         # 也更加简洁
+        front_img_url = response.meta.get("front-image-url", "")
         item_loader = ArticleItemLoader(item=JobBoleArticleItem(), response=response)
+        article_item_loader = JobBoleArticleItem()
         item_loader.add_css("title", ".entry-header h1::text")  # 通过 css 选择器获取值
         item_loader.add_value("url", response.url)
         item_loader.add_css("create_date", ".entry-meta-hide-on-mobile::text")
@@ -162,4 +164,4 @@ class JobboleSpider(scrapy.Spider):
         # 如何做到这个，可以在 Item 类中进行处理，在 Item 类的对象中，定义对象时在 Field() 中进行处理，查看 items.py 文件
 
         # 将 item 传递到 scrapy, scrapy 会通过 http 将 item 传递到 pipeline, 数据操作，都可以集中在 pipeline 中进行处理
-        yield article_item
+        yield article_item_loader
