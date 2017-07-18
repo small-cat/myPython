@@ -4,6 +4,8 @@ import re
 import time
 import os
 
+from PIL import Image
+
 __author__ = "Sholegance"
 
 # python 中的 cookie lib，能够读取本地的 cookie 文件，生成 cookie，然后赋值给requests 的 cookie
@@ -54,7 +56,7 @@ def get_xsrf_by_request():
     """
     response = requests.get("https://www.zhihu.com", headers=header)    # 这个参数必须是 headers
     # print(response.text)
-    match_obj = re.match('.*name="_xsrf" value="(.*?)"', response.text)
+    match_obj = re.search('.*name="_xsrf" value="(.*?)"', response.text)
     if match_obj:
         return match_obj.group(1)
     else:
@@ -104,10 +106,25 @@ def zhihu_login(account, password):
     # get check code image
     checkcode_url = "https://www.zhihu.com/captcha.gif?r=" + str(int(time.time()*1000)) + "&type=login"
     print(checkcode_url)
+    """
+    下面获取验证码，只能使用 session.get，而不能使用 requests.get
+    因为一次 session 就是一次会话，在后面继续使用验证码登录时，是在同一个 session 中的，session 会记录很多值，cookie 等
+    但是，如果使用的是 requests ，前后就不再同一个会话中，那么后面将带有验证码的 post_data 发送过去时，会显示验证码无效，
+    登录失败
+    
+    但是在 scrapy 中，是没有 session的，使用 requests 又不行，如何解决呢？
+    """
     resp = session.get(checkcode_url, headers=header).content
     with open("checkcode.gif", "wb") as f:
         f.write(resp)
     f.close()
+
+    try:
+        im = Image.open("checkcode.gif")
+        im.show()
+        im.close()
+    except:
+        pass
 
     post_data["captcha"] = input("checkcode:")
     response_text = session.post(post_url, data=post_data, headers = header)

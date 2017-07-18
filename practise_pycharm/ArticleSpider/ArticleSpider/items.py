@@ -135,3 +135,36 @@ class ArticleItemLoader(ItemLoader):
     # 这里表示，输出获取的 ArticleItemLoader 提取到的值，都是 list 中的第一个值
     # 如果有的默认不是取第一个值，就在 Field() 中进行修改
     default_output_processor = TakeFirst()
+
+class ZhihuQuestionItem(scrapy.Item):
+    """
+    知乎的问题 item
+    """
+    question_id = scrapy.Field()        # 问题 id
+    question_topics = scrapy.Field()    # 问题主题
+    question_url = scrapy.Field()       # 问题链接
+    question_title = scrapy.Field()     # 问题标题
+    question_content = scrapy.Field()   # 问题内容
+    answer_num = scrapy.Field()         # 回答数
+    comments_num = scrapy.Field()       # 评论数
+    attentioned_num = scrapy.Field()    # 关注数
+    scanned_num = scrapy.Field()        # 浏览数
+    crawl_time = scrapy.Field()         # 爬取时间
+
+class ZhihuAnswerItem(scrapy.Item):
+    """
+    知乎回答 item
+    """
+    question_id = scrapy.Field()        # 问题 id
+    answer_url = scrapy.Field()         # 回答链接
+    answer_id = scrapy.Field()          # 回答 id
+    author_id = scrapy.Field()          # 回答者 id
+    author_name = scrapy.Field()        # 回答者昵称
+    author_gender = scrapy.Field()      # 回答者性别 1 2
+    answer_content = scrapy.Field()     # 回答内容
+    praise_num = scrapy.Field()         # 点赞数
+    comments_num = scrapy.Field()       # 评论数
+    create_time = scrapy.Field()        # 创建时间
+    update_time = scrapy.Field()        # 更新时间
+    crawl_time = scrapy.Field()         # 爬取时间
+
