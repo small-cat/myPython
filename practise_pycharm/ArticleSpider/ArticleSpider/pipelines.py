@@ -36,6 +36,7 @@ class ArticleImagePipeline(ImagesPipeline):
         :param info:
         :return:
         """
+        img_file_path = ""
         if "front_img_url" in item:
             for ok, value in results:
                 img_file_path = value["path"]
@@ -159,9 +160,9 @@ class MysqlTwistedPipeline(object):
         使用 twisted 将 mysql 操作编程异步执行
         """
         query = self.dbpool.runInteraction(self.do_insert, item)
-        query.addErrback(self.handle_error) # handle exceptions
+        query.addErrback(self.handle_error, item, spider) # handle exceptions
 
-    def handle_error(self, failure):
+    def handle_error(self, failure, item, spider):
         """
         处理异步操作的异常
         """
@@ -170,17 +171,9 @@ class MysqlTwistedPipeline(object):
     def do_insert(self, cursor, item):
         """
         执行具体的操作，能够自动 commit
+        根据不同的 item，构建不同的sql语句插入到数据库中
         """
-        print(item["create_date"])
-        insert_sql = """
-                    insert into article(title, create_date, url, url_object_id, front_img_url, front_img_path, comment_nums, 
-                    fav_nums, vote_nums, tags, content) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, '%s', '%s');
-                """ % (item["title"], item["create_date"], item["url"], item["object_id"], item["front_img_url"],
-                       item["front_img_path"], item["comment_nums"], item["fav_nums"], item["vote_nums"], item["tags"],
-                       item["content"])
+        # if item.__class__.__name == "JobboleArticleItem" 这种方法比较死板
 
-        # self.cursor.execute(insert_sql, (item["title"], item["create_date"], item["url"], item["object_id"],
-        #                                 item["front_img_url"], item["front_img_path"], item["comment_nums"],
-        #                                 item["fav_nums"], item["vote_nums"], item["tags"], item["content"]))
-        print(insert_sql)
-        cursor.execute(insert_sql)
+        insert_sql, params = item.get_insert_sql()
+        cursor.execute(insert_sql, params)

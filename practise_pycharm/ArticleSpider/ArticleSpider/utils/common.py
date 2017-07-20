@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import hashlib
+import re
 
 
 def gen_md5(url):
@@ -17,6 +18,20 @@ def gen_md5(url):
     m.update(url)
 
     return m.hexdigest()
+
+
+def extract_nums(text):
+    """
+    从字符串中提取 数字
+    """
+    re_match = re.match(".*?(\d+).*", text)
+    if re_match:
+        nums = (int)(re_match.group(1))
+    else:
+        nums = 0
+
+    return nums
+
 
 if __name__ == "__main__":
     print(gen_md5("https://www.jobbole.com"))
