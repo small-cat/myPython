@@ -9,6 +9,7 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 import os
+import sys
 
 BOT_NAME = 'ArticleSpider'
 
@@ -86,6 +87,8 @@ IMAGES_URLS_FIELD = "front_img_url_download"     # ITEM 中的图片 URL，用�
 # 就会出现错误 ValueError: Missing scheme in request url: h， 在 parse() 函数中赋值的时候，就以数组的形式进行赋值
 PROJECT_IMAGE_PATH = os.path.abspath(os.path.dirname(__file__))   # 获取当前文件所在目录
 IMAGES_STORE = os.path.join(PROJECT_IMAGE_PATH, "images")         # 下载图片的保存位置
+
+# 设置路径，将当前项目路径加入到 PYTHON_HOME 环境变量中
 
 # 对下在的图片进行过滤，最小为 100*100
 # IMAGES_MIN_HEIGHT = 100
