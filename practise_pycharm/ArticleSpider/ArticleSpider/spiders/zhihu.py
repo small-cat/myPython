@@ -31,7 +31,7 @@ data[*].author.follower_count,badge[?(type=best_answerer)].topics&offset={1}&lim
         "Host": "www.zhihu.com",
         "Referer": "https://www.zhihu.com/",
         "Upgrade-Insecure-Requests": "1",
-        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0"
+        "User-Agent": ""
     }
 
     def parse(self, response):

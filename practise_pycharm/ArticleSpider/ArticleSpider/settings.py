@@ -55,9 +55,11 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'ArticleSpider.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+# 在 scrapy engine 与 downloader 中间就是 downloader middleware
+DOWNLOADER_MIDDLEWARES = {
+    'ArticleSpider.middlewares.MyCustomDownloaderMiddleware': None,
+    'ArticleSpider.middlewares.RandomUserAgentMiddleWare': 543,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -123,3 +125,6 @@ MYSQL_PASSWORD = "wuzhenyu"
 
 SQL_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 SQL_DATE_FORMAT = "%Y-%m-%d"
+
+# user_agent_list = []
+RANDOM_UA_TYPE = "random"
